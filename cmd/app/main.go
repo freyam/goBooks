@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"goBooks/app/router"
 	"goBooks/config"
 	"log"
 	"net/http"
@@ -9,13 +10,14 @@ import (
 
 func main() {
 	appConf := config.AppConfig()
+	appRouter := router.New()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", Greet)
 	address := fmt.Sprintf(":%d", appConf.Server.Port)
 	log.Printf("Starting server %s\n", address)
 	s := &http.Server{
 		Addr:         address,
-		Handler:      mux,
+		Handler:      appRouter,
 		ReadTimeout:  appConf.Server.TimeoutRead,
 		WriteTimeout: appConf.Server.TimeoutWrite,
 		IdleTimeout:  appConf.Server.TimeoutIdle,
