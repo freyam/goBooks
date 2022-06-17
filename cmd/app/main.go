@@ -2,19 +2,23 @@ package main
 
 import (
 	"fmt"
+	"goBooks/app/app"
 	"goBooks/app/router"
 	"goBooks/config"
-	"log"
+	lr "goBooks/util/logger"
 	"net/http"
 )
 
 func main() {
 	appConf := config.AppConfig()
-	appRouter := router.New()
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", Greet)
+	logger := lr.New(appConf.Debug)
+	application := app.New(logger)
+	appRouter := router.New(application)
+
 	address := fmt.Sprintf(":%d", appConf.Server.Port)
-	log.Printf("Starting server %s\n", address)
+
+	logger.Info().Msgf("Starting server %s\n", address)
+
 	s := &http.Server{
 		Addr:         address,
 		Handler:      appRouter,
@@ -23,7 +27,7 @@ func main() {
 		IdleTimeout:  appConf.Server.TimeoutIdle,
 	}
 	if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatal("Server startup failed")
+		logger.Fatal().Err(err).Msg("Server startup failed")
 	}
 }
 
