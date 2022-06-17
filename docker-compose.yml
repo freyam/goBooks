@@ -5,6 +5,14 @@ services:
       context: .
       dockerfile: ./docker/app/Dockerfile
     env_file:
-    - ./docker/app/.env
+      - ./docker/app/.env
     ports:
       - "8080:8080"
+
+  db:
+    build: ./docker/mariadb/
+    env_file:
+      - ./docker/app/.env
+    ports:
+      - 3306:3306
+    restart: always
